@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head'); %>
+</head>
+<body class="container">
+
+<header>
+  <%- include('../partials/header'); %>
+</header>
+
+<main>
+
+  <div class="jumbotron">
+      <h3>Danh sách nhân viên</h3>
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Tên nhân viên</th>
+            <th scope="col">Tuổi</th>
+            <th scope="col">Email</th>
+            <th scope="col">Chức năng</th>
+          </tr>
+        </thead>
+        <tbody>
+            <% staffs.forEach(function(staff, index) {  %>
+          <tr >
+            <th scope="row"><%= index+1 %></th>
+            <td><%= staff.name %></td>
+            <td><%= staff.age %></td>
+            <td><%= staff.email %></td>
+            <td>
+                <svg style="cursor: pointer;" onclick='editItem("<%= staff._id %>")' xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                  </svg>
+                  <svg style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"/>
+                    <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"/>
+                  </svg>
+            </td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+  </div>
+  <hr />
+  <h3>Thêm mới nhân viên</h3>
+  <form id="uploadFile" enctype="multipart/form-data" action="/upload-image" method="post">
+    <input type="file" name="file" />
+        <input type="submit" value="Upload File" name="submit">
+  </form>
+  <form class="row g-3" action="/staff/add" method="post">
+    <div class="col-md-6">
+        <img src="<%= urlUploaded %>" height="100px" width="100px" />
+        <input type="hidden" class="form-control" name="avatar" id="avatar" value="<%= urlUploaded %>">
+    </div>
+    <div class="col-md-6">
+      <label for="name" class="form-label">Name</label>
+      <input type="text" class="form-control" id="name" name="name" placeholder="Nhập tên">
+    </div>
+    <div class="col-md-6">
+      <label for="email" class="form-label">Email</label>
+      <input type="email" class="form-control" id="email" name="email" placeholder="Nhập email">
+    </div>
+    <div class="col-6">
+      <label for="age" class="form-label">Age</label>
+      <input type="text" class="form-control" id="age" name="age" placeholder="Nhập tuổi">
+    </div>
+    <div class="col-12">
+      <button type="submit" class="btn btn-primary">Thêm mới</button>
+    </div>
+  </form>
+  <hr />
+  <div id="formEdit"></div>
+</main>
+<script>
+    function handleUpload(){
+
+    }
+
+    function editItem(staffId) {
+  $.ajax({
+    type: "GET",
+    url: `/staff/detail/${staffId}`,
+    success: function (rs) {
+      if (rs.s === 200) {
+        let staffInfo = rs.data;
+        var formEdit = `
+                  <h3>Cập nhật thông tin nhân viên</h3>
+                  <form class="row g-3" action="/staff/edit" method="post">
+                        <div>
+                            <input type="text" class="form-control" id="_id" name="_id" value="${staffInfo._id}" style="display:none">
+                        </div>
+                      <div class="col-md-6">
+                      <label for="name" class="form-label">Name</label>
+                      <input type="text" class="form-control" id="name" name="name" placeholder="Nhập tên" value="${staffInfo.name}">
+                      </div>
+                      <div class="col-md-6">
+                      <label for="email" class="form-label">Email</label>
+                      <input type="email" class="form-control" id="email" name="email" placeholder="Nhập email" value="${staffInfo.email}">
+                      </div>
+                      <div class="col-6">
+                      <label for="age" class="form-label">Age</label>
+                      <input type="text" class="form-control" id="age" name="age" placeholder="Nhập tuổi" value="${staffInfo.age}">
+                      </div>
+                      <div class="col-12">
+                      <button type="submit" class="btn btn-primary">Cập nhật</button>
+                      </div>
+                  </form>
+                  `;
+        $("#formEdit").html(formEdit);
+      } else {
+        alert(rs.msg);
+      }
+    },
+  });
+}
+
+</script>
+<footer>
+  <%- include('../partials/footer'); %>
+</footer>
+<!-- <script type="module" src="js/main.js"></script> -->
+</body>
+</html>
