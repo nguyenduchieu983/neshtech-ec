@@ -2,12 +2,12 @@ const express = require("express");
 const app = express();
 const CONFIG = require("./config");
 const mongoose = require("mongoose");
-const home = require('./route/home');
-const bodyParser = require("body-parser")
+const home = require("./route/home");
+const bodyParser = require("body-parser");
 
 app.set("view engine", "ejs");
-app.use(bodyParser.urlencoded({extended: true}))
-app.use("/", home)
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use("/", home);
 
 /**Connect to mongoDB */
 mongoose
@@ -22,7 +22,7 @@ mongoose
   .catch((err) => {
     console.log(`Connect mongoDb fail: ${err}`);
   });
-
+//demo
 app.listen(CONFIG.PORT, () => {
   console.log(`Example app listening on port ${CONFIG.PORT}`);
 });
